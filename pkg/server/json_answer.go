@@ -6,11 +6,11 @@ import (
 )
 
 type Response struct {
-	Status  int    `json:"status"`  // в JSON будет поле "status"
-	Message string `json:"message"` // в JSON будет поле "message"
+	Status  int    `json:"status"`
+	Message string `json:"message"`
 }
 
-func jsonResponce(resp interface{}, w http.ResponseWriter) {
+func JsonResponce(resp interface{}, w http.ResponseWriter) {
 	_, err := json.Marshal(resp)
 	if err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)

@@ -1,6 +1,7 @@
 package serverHTTP
 
 import (
+	//"API/pkg/handler"
 	"context"
 	"log"
 	"net/http"
@@ -12,42 +13,31 @@ type Server struct {
 	Host           string
 	Port           string
 	MaxHeaderBytes int
+	Handler        http.Handler
 	WriteTimeout   time.Duration
 	ReadTimeout    time.Duration
 }
 
-func NewServer(host string, port string, maxHeaderBytes int, writeTimeout time.Duration, readTimeout time.Duration) *Server {
+func NewServer(host string, port string, maxHeaderBytes int, handler http.Handler, writeTimeout time.Duration, readTimeout time.Duration) *Server {
 	return &Server{
 		Host:           host,
 		Port:           port,
 		MaxHeaderBytes: maxHeaderBytes,
+		Handler:        handler,
 		WriteTimeout:   writeTimeout,
 		ReadTimeout:    readTimeout,
 	}
-}
-
-func (s *Server) Ping(w http.ResponseWriter, r *http.Request) {
-	var resp Response = Response{
-		Status:  http.StatusOK,
-		Message: "Connection successful",
-	}
-
-	jsonResponce(resp, w)
-
-	var address string = r.RemoteAddr
-	log.Printf("Ping: Connection successful, Address: %s", address)
 }
 
 func (s *Server) Start() error {
 	s.httpServer = &http.Server{
 		Addr:           s.Host + ":" + s.Port,
 		MaxHeaderBytes: s.MaxHeaderBytes,
+		Handler:        s.Handler,
 		WriteTimeout:   s.WriteTimeout,
 		ReadTimeout:    s.ReadTimeout,
 	}
 	log.Printf("Server is running on %s:%s", s.Host, s.Port)
-
-	http.HandleFunc("/ping", s.Ping)
 
 	return s.httpServer.ListenAndServe()
 }

@@ -1,8 +1,8 @@
 package repository
 
 type Users struct {
-	ID       int     `json:"user_id"`
-	Niсkname string  `json:"nickname"`
+	ID       uint64  `json:"user_id"`
+	Username string  `json:"username"`
 	Name     string  `json:"name"`
 	Surname  string  `json:"surname"`
 	Password string  `json:"password"`
@@ -10,17 +10,21 @@ type Users struct {
 }
 
 type Messages struct {
-	ID           int    `json:"message_id"`
-	Text         string `json:"text"`
-	Time         string `json:"sending_time"`
-	Status       int    `json:"message_status"`
-	ID_sender    int    `json:"sender_id"`
-	ID_recipient int    `json:"id_recipient"`
+	ID     uint64 `json:"message_id"`
+	Text   string `json:"text"`
+	Time   string `json:"sending_time"`
+	Status int    `json:"message_status"`
+	ChatID uint64 `json:"chat_id"`
+}
+
+type Chats struct {
+	ID      uint64   `json:"chat_id"`
+	UsersID []uint64 `json:"users_id"`
 }
 
 type Transactions struct {
-	ID           int     `json:"transaction_id"`
-	Amount       float64 `json:"amount"`
-	ID_sender    int     `json:"sender_id"`
-	ID_recipient int     `json:"id_recipient"`
+	ID          uint64  `json:"transaction_id"`
+	Amount      float64 `json:"amount"`
+	SenderID    uint64  `json:"sender_id"`
+	RecipientID uint64  `json:"recipient_id"`
 }

@@ -3,9 +3,7 @@ package service
 import "API/pkg/repository"
 
 type Authorization interface {
-	SignUp(*repository.Users) error
-	SignIn(*repository.Users) error
-	DeleteAccount() error
+	CreateUser(*repository.Users) (int, error)
 }
 
 type Messenger interface {
@@ -17,12 +15,13 @@ type Transaction interface {
 }
 
 type Service struct {
-	repos *repository.Repository
 	Authorization
 	Messenger
 	Transaction
 }
 
 func NewService(repos *repository.Repository) *Service {
-	return &Service{repos: repos}
+	return &Service{
+		Authorization: NewAuthService(repos.Authorization),
+	}
 }

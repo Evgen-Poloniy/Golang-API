@@ -18,12 +18,9 @@ func NewHendler(serv *service.Service) *Handler {
 func (h *Handler) Handle() http.Handler {
 	router := http.NewServeMux()
 
-	router.HandleFunc("/ping", h.ping)
-	router.HandleFunc("/options", h.options)
-	router.HandleFunc("/sign-up", h.signUp)
-	router.HandleFunc("/sign-in", h.signIn)
-	router.HandleFunc("/message", h.message)
-	router.HandleFunc("/transaction", h.transaction)
+	router.HandleFunc(pathPing, h.ping)
+	router.HandleFunc(pathOptions, h.options)
+	router.HandleFunc(pathSingUp, h.signUp)
 
 	return router
 }

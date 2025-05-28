@@ -23,12 +23,9 @@ func (h *Handler) options(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	lines := []string{
-		"/ping - GET",
-		"/options - GET",
-		"/sign-up - POST",
-		"/sign-in - POST",
-		"/message - GET, POST, PATCH, DELETE",
-		"/transaction - GET, POST",
+		pathPing + " - GET",
+		pathOptions + " - GET",
+		pathSingUp + " - POST",
 	}
 	w.Write([]byte(strings.Join(lines, "\n")))
 

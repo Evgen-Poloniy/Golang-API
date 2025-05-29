@@ -1,3 +1,14 @@
-# Secure-Messenger
+# Golang-API
+>v.0.1.4
 
-v.0.1.1
+1. Handlers:
+#
+    /ping         - GET
+
+    /option       - GET
+
+    /auth/sign-up - POST
+
+    /action/user  - GET
+
+

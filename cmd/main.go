@@ -11,13 +11,10 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load("./config/.env")
-	if err != nil {
+	if err := getEnv(envPath); err != nil {
 		log.Fatalf("Error of loading .env file: %s", err.Error())
 	}
 
@@ -32,7 +29,14 @@ func main() {
 	serv := service.NewService(repos)
 	hand := handler.NewHendler(serv)
 
-	srv := serverHTTP.NewServer(os.Getenv("API_HOST"), os.Getenv("API_PORT"), 1<<20, hand.Handle(), 10*time.Second, 10*time.Second)
+	srv := serverHTTP.NewServer(
+		os.Getenv("API_HOST"),
+		os.Getenv("API_PORT"),
+		maxHeaderBytes,
+		hand.Handle(),
+		writeTimeout,
+		readTimeout,
+	)
 
 	go func() {
 		if err := srv.Start(); err != nil {
@@ -43,8 +47,6 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
-
-	log.Println("Gracefully shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

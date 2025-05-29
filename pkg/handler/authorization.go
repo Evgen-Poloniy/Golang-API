@@ -18,19 +18,19 @@ func (h *Handler) signUp(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		_, err = h.serv.CreateUser(&user)
-
+		var user_id int
+		user_id, err = h.serv.CreateUser(&user)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		w.WriteHeader(http.StatusOK)
-		var answerString string = "Account with username" + user.Username + "has created\n"
+		var answerString string = "Account with username " + user.Username + " has created\n"
 		w.Write([]byte(answerString))
 
 		var address string = r.RemoteAddr
-		log.Printf("Action: sign up from: %s\n", address)
+		log.Printf("Action: sign up from: %s, user_id = %d\n", address, user_id)
 
 	default:
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)

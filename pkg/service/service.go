@@ -6,8 +6,8 @@ type Authorization interface {
 	CreateUser(*repository.Users) (int, error)
 }
 
-type Messenger interface {
-	SendMessage(senderName *string, recipientName *string) error
+type Action interface {
+	GetUserById(user_id int) (*repository.Users, error)
 }
 
 type Transaction interface {
@@ -16,12 +16,13 @@ type Transaction interface {
 
 type Service struct {
 	Authorization
-	Messenger
+	Action
 	Transaction
 }
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
+		Action:        NewActionService(repos.Action),
 	}
 }

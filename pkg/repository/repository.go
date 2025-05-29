@@ -10,7 +10,8 @@ type Authorization interface {
 	CreateUser(user *Users) (int, error)
 }
 
-type Messenger interface {
+type Action interface {
+	GetUserById(user_id int) (*Users, error)
 }
 
 type Transaction interface {
@@ -18,12 +19,13 @@ type Transaction interface {
 
 type Repository struct {
 	Authorization
-	Messenger
+	Action
 	Transaction
 }
 
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthRepository(db),
+		Action:        NewActionRepository(db),
 	}
 }

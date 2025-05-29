@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"time"
 )
@@ -33,14 +32,14 @@ func (cfg *DBConfig) printConfig() {
 
 	switch mode {
 	case "debug":
-		log.Println("Database Configuration:")
-		log.Printf("Driver:   %s\n", cfg.DriverName)
-		log.Printf("DB Name:  %s\n", cfg.DBName)
-		log.Printf("Host:     %s\n", cfg.Host)
-		log.Printf("Port:     %s\n", cfg.Port)
-		log.Printf("User:     %s\n", cfg.Username)
-		log.Printf("Password: [REDACTED]\n")
-		log.Printf("SSL Mode: %s\n", cfg.SSLMode)
+		fmt.Printf("Database Configuration:\n")
+		fmt.Printf("\tDriver:   %s\n", cfg.DriverName)
+		fmt.Printf("\tDB Name:  %s\n", cfg.DBName)
+		fmt.Printf("\tHost:     %s\n", cfg.Host)
+		fmt.Printf("\tPort:     %s\n", cfg.Port)
+		fmt.Printf("\tUser:     %s\n", cfg.Username)
+		fmt.Printf("\tPassword: [REDACTED]\n")
+		fmt.Printf("\tSSL Mode: %s\n", cfg.SSLMode)
 	}
 }
 

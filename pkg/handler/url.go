@@ -1,7 +1,9 @@
 package handler
 
 const (
-	pathPing    = "/ping"
-	pathOptions = "/options"
-	pathSingUp  = "/auth/sign-up"
+	pathPing                 string = "/ping"
+	pathOption               string = "/option"
+	pathSingUp               string = "/auth/sign-up"
+	pathActionUser           string = "/action/user"
+	pathActionShutDownServer string = "/action/shutdown"
 )

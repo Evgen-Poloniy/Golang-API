@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"API/pkg/constants"
 	"database/sql"
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -27,27 +29,50 @@ func (cfg *DBConfig) getEnv() {
 	cfg.SSLMode = os.Getenv("SSL_MODE")
 }
 
-func (cfg *DBConfig) printConfig() {
+func NewDatabase(cfg *DBConfig) (*sql.DB, error) {
+	cfg.getEnv()
+
 	var mode string = os.Getenv("MODE")
+	var db *sql.DB
+	var err error
 
 	switch mode {
-	case "debug":
-		fmt.Printf("Database Configuration:\n")
+	case constants.DEBUG:
+		db, err = makeConnectionDB(cfg)
+
+		fmt.Print("Database Configuration:\n")
 		fmt.Printf("\tDriver:   %s\n", cfg.DriverName)
 		fmt.Printf("\tDB Name:  %s\n", cfg.DBName)
 		fmt.Printf("\tHost:     %s\n", cfg.Host)
 		fmt.Printf("\tPort:     %s\n", cfg.Port)
 		fmt.Printf("\tUser:     %s\n", cfg.Username)
-		fmt.Printf("\tPassword: [REDACTED]\n")
+		fmt.Print("\tPassword:  [REDACTED]\n")
 		fmt.Printf("\tSSL Mode: %s\n", cfg.SSLMode)
+
+		return db, err
+
+	case constants.DEBUG_WITHOUT_DB:
+		fmt.Printf("Database has'nt started, because of chosed mode: \"%s\"\n", mode)
+		return nil, nil
+
+	case constants.PRODUCTION:
+		db, err = makeConnectionDB(cfg)
+
+		return db, err
+
+	default:
+		var errorString string = fmt.Sprintf(
+			"uncorrect mode of API. Check .env file and set API mode:\n\t\"%s\"\n\t\"%s\"\n\t\"%s\"\n",
+			constants.DEBUG,
+			constants.DEBUG_WITHOUT_DB,
+			constants.PRODUCTION,
+		)
+		return nil, errors.New(errorString)
 	}
+
 }
 
-func NewDatabase(cfg DBConfig) (*sql.DB, error) {
-	cfg.getEnv()
-
-	cfg.printConfig()
-
+func makeConnectionDB(cfg *DBConfig) (*sql.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode,
@@ -67,7 +92,7 @@ func NewDatabase(cfg DBConfig) (*sql.DB, error) {
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to connect to database after 3 attempts: %v", err)
 	}
 
 	if err := db.Ping(); err != nil {
@@ -75,4 +100,10 @@ func NewDatabase(cfg DBConfig) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func CloseDB(db *sql.DB) {
+	if db != nil {
+		db.Close()
+	}
 }

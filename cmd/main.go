@@ -6,6 +6,7 @@ import (
 	serverHTTP "API/pkg/server"
 	"API/pkg/service"
 	"context"
+	"database/sql"
 	"log"
 	"os"
 	"os/signal"
@@ -18,12 +19,15 @@ func main() {
 		log.Fatalf("Error of loading .env file: %s", err.Error())
 	}
 
+	var db *sql.DB
 	var cfg repository.DBConfig
-	db, err := repository.NewDatabase(cfg)
+	var err error
+
+	db, err = repository.NewDatabase(&cfg)
 	if err != nil {
 		log.Fatalf("Database connection error: %s\n", err.Error())
 	}
-	defer db.Close()
+	defer repository.CloseDB(db)
 
 	repos := repository.NewRepository(db)
 	serv := service.NewService(repos)

@@ -21,7 +21,7 @@ func (h *Handler) ping(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) options(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
-	w.Write([]byte(h.printHandlers()))
+	w.Write([]byte(h.printHandlers(&urlPaths)))
 
 	var address string = r.RemoteAddr
 	log.Printf("Requested actions of the server from address: %s", address)

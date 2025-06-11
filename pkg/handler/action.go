@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,63 +10,153 @@ import (
 )
 
 func (h *Handler) getUserById(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
+	switch r.Method {
+	case http.MethodGet:
 		var user_id_str string = r.URL.Query().Get("user_id")
 		if user_id_str == "" {
-			http.Error(w, "Parameter user_id is required", http.StatusBadRequest)
+			responseJsonError(w, "Parameter user_id is required", http.StatusBadRequest)
 			return
 		}
 
-		user_id, convertationErr := strconv.Atoi(user_id_str)
-		if convertationErr != nil {
-			http.Error(w, "Bad convertation user_id to integer value", http.StatusInternalServerError)
+		user_id, err := strconv.Atoi(user_id_str)
+		if err != nil {
+			responseJsonError(w, err.Error(), http.StatusInternalServerError)
 		}
 
 		user, err := h.serv.GetUserById(user_id)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			responseJsonError(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
-
-		var answer string = fmt.Sprintf(
-			"{\n\t%d,\n\t\"%s\",\n\t\"%s\",\n\t\"%s\",\n\t\"%s\",\n\t%.2f\n}",
-			user.ID,
-			user.Username,
-			user.Name,
-			user.Surname,
-			user.Password,
-			user.Coins,
-		)
-
-		w.Write([]byte(answer))
+		responseJsonData(w, user, http.StatusOK)
 
 		var address string = r.RemoteAddr
 		log.Printf("Action: get information about user by user_id from: %s\n", address)
 
-	} else {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	default:
+		responseJsonError(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func (h *Handler) getUserByUsername(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		var username string = r.URL.Query().Get("username")
+		if username == "" {
+			responseJsonError(w, "Parameter username is required", http.StatusBadRequest)
+			return
+		}
+
+		user, err := h.serv.GetUserByUsername(username)
+		if err != nil {
+			responseJsonError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		responseJsonData(w, user, http.StatusOK)
+
+		var address string = r.RemoteAddr
+		log.Printf("Action: get information about user by username from: %s\n", address)
+
+	default:
+		responseJsonError(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func (h *Handler) getUserByAttributes(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPost:
+		var fields allowedAttributes
+
+		err := json.NewDecoder(r.Body).Decode(&fields)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
+		attributes := make(map[string]string, countAllowedAttributes)
+
+		if fields.ID != 0 {
+			attributes["user_id"] = strconv.FormatUint(uint64(fields.ID), 10)
+		}
+		if fields.Username != "" {
+			attributes["username"] = fields.Username
+		}
+		if fields.Name != "" {
+			attributes["name"] = fields.Name
+		}
+		if fields.Surname != "" {
+			attributes["surname"] = fields.Surname
+		}
+
+		if len(attributes) == 0 {
+			responseJsonError(w, "Values of attributus is required", http.StatusBadRequest)
+			return
+		}
+
+		user, err := h.serv.GetUserByAttributes(attributes)
+		if err != nil {
+			responseJsonError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		responseJsonData(w, user, http.StatusOK)
+
+		var address string = r.RemoteAddr
+		log.Printf("Action: get information about user from: %s\n", address)
+
+	default:
+		responseJsonError(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 }
 
 func (h *Handler) shutdownServer(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
+	switch r.Method {
+	case http.MethodGet:
 		var password string = r.URL.Query().Get("password")
 		if password == "" {
-			http.Error(w, "Parameter password is required", http.StatusBadRequest)
+			responseJsonError(w, "Parameter password is required", http.StatusBadRequest)
 			return
 		}
 
 		if password == os.Getenv("API_PASSWORD") {
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("Server is shutting down..."))
+			responseJsonData(w, "Server is shutting down", http.StatusOK)
 		} else {
-			w.WriteHeader(http.StatusBadRequest)
-			http.Error(w, "Parameter password is required", http.StatusBadRequest)
+			responseJsonError(w, "Whrong password. Try again", http.StatusBadRequest)
 		}
 
-	} else {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	default:
+		responseJsonError(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
+}
+
+func (h *Handler) testGetUserByAttributes(w http.ResponseWriter, r *http.Request) {
+	var field allowedAttributes
+
+	err := json.NewDecoder(r.Body).Decode(&field)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	fmt.Println(field)
+
+	attributes := make(map[string]string, countAllowedAttributes)
+
+	if field.ID != 0 {
+		attributes["user_id"] = strconv.FormatUint(uint64(field.ID), 10)
+	}
+	if field.Username != "" {
+		attributes["username"] = field.Username
+	}
+	if field.Name != "" {
+		attributes["name"] = field.Name
+	}
+	if field.Surname != "" {
+		attributes["surname"] = field.Surname
+	}
+
+	for key, value := range attributes {
+		fmt.Println(key, value)
+	}
+
 }

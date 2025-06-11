@@ -13,3 +13,19 @@ func NewActionService(repos repository.Action) *ActionService {
 func (s *ActionService) GetUserById(user_id int) (*repository.Users, error) {
 	return s.repos.GetUserById(user_id)
 }
+
+func (s *ActionService) GetUserByUsername(username string) (*repository.Users, error) {
+	return s.repos.GetUserByUsername(username)
+}
+
+func (s *ActionService) GetUserIdByUsername(username string) (uint32, error) {
+	return 0, nil
+}
+
+func (s *ActionService) GetUserByAttributes(attributes map[string]string) (*repository.Users, error) {
+	return s.repos.GetUserByAttributes(attributes)
+}
+
+func (s *ActionService) GetUserBalance(user_id uint32) (float64, error) {
+	return s.repos.GetUserBalance(user_id)
+}

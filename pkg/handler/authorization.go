@@ -14,25 +14,24 @@ func (h *Handler) signUp(w http.ResponseWriter, r *http.Request) {
 
 		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
-			http.Error(w, "Invalid input", http.StatusBadRequest)
+			responseJsonError(w, "Invalid input", http.StatusBadRequest)
 			return
 		}
 
 		var user_id int
 		user_id, err = h.serv.CreateUser(&user)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			responseJsonError(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
-		var answerString string = "Account with username " + user.Username + " has created\n"
-		w.Write([]byte(answerString))
+		var answerString string = "Account with username " + user.Username + " has created"
+		responseJsonData(w, answerString, http.StatusOK)
 
 		var address string = r.RemoteAddr
 		log.Printf("Action: sign up from: %s, user_id = %d\n", address, user_id)
 
 	default:
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		responseJsonError(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 }

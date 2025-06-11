@@ -8,8 +8,6 @@ import (
 	"os"
 )
 
-var urlPaths []string
-
 type Handler struct {
 	serv *service.Service
 }
@@ -18,10 +16,10 @@ func NewHendler(serv *service.Service) *Handler {
 	return &Handler{serv}
 }
 
-func (h *Handler) printHandlers(urls *[]string) string {
+func (h *Handler) printHandlers(urlsParametrs []handlerParametrs) string {
 	var lines string = "Handlers:\n"
-	for _, str := range *urls {
-		lines += "\t" + str + "\n"
+	for _, uprs := range urlsParametrs {
+		lines += fmt.Sprintf("\t%s - %s\n", uprs.Path, uprs.Methods)
 	}
 
 	return lines
@@ -40,35 +38,25 @@ func checkMode(h *Handler, router *http.ServeMux) {
 
 	switch mode {
 	case constants.DEBUG:
-		urls := []string{
-			pathPing + " - GET",
-			pathOption + " - GET",
-			pathSingUp + " - POST",
-			pathActionUser + " - GET",
-			pathActionShutDownServer + " - GET",
-		}
-		urlPaths = urls
-
 		router.HandleFunc(pathPing, h.ping)
 		router.HandleFunc(pathOption, h.options)
 		router.HandleFunc(pathSingUp, h.signUp)
-		router.HandleFunc(pathActionUser, h.getUserById)
+		router.HandleFunc(pathActionUserSearch, h.getUserByAttributes)
+		router.HandleFunc("/v1/action/user", h.getUserByUsername)
 		router.HandleFunc(pathActionShutDownServer, h.shutdownServer)
+		router.HandleFunc(patMakeTransaction, h.makeTransaction)
 
-		fmt.Print(h.printHandlers(&urlPaths))
+		router.HandleFunc(pathTestHandler, h.testGetUserByAttributes)
+
+		fmt.Print(h.printHandlers(urlsParametrs))
 
 	case constants.DEBUG_WITHOUT_DB:
-		urls := []string{
-			pathPing + " - GET",
-			pathOption + " - GET",
-			pathActionShutDownServer + " - GET",
-		}
-		urlPaths = urls
-
 		router.HandleFunc(pathPing, h.ping)
 		router.HandleFunc(pathOption, h.options)
 		router.HandleFunc(pathActionShutDownServer, h.shutdownServer)
 
-		fmt.Print(h.printHandlers(&urlPaths))
+		router.HandleFunc(pathTestHandler, h.testGetUserByAttributes)
+
+		fmt.Print(h.printHandlers(urlsParametrsDebugWithoutDB))
 	}
 }

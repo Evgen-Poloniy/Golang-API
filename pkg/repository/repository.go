@@ -12,9 +12,14 @@ type Authorization interface {
 
 type Action interface {
 	GetUserById(user_id int) (*Users, error)
+	GetUserByUsername(username string) (*Users, error)
+	GetUserIdByUsername(username string) (uint32, error)
+	GetUserByAttributes(attributes map[string]string) (*Users, error)
+	GetUserBalance(user_id uint32) (float64, error)
 }
 
 type Transaction interface {
+	MakeTransaction(senderID uint32, recipientID uint32, amount float64) error
 }
 
 type Repository struct {
@@ -27,5 +32,6 @@ func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthRepository(db),
 		Action:        NewActionRepository(db),
+		Transaction:   NewTransactionRepository(db),
 	}
 }

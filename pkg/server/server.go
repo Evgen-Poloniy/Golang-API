@@ -37,13 +37,13 @@ func (s *Server) Start() error {
 		WriteTimeout:   s.WriteTimeout,
 		ReadTimeout:    s.ReadTimeout,
 	}
-	log.Printf("Server is running on %s:%s", s.Host, s.Port)
+	log.Printf("Server is running on %s:%s\n", s.Host, s.Port)
 
 	return s.httpServer.ListenAndServe()
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
-	log.Printf("Shutting down server on %s:%s...", s.Host, s.Port)
+	log.Printf("Shutting down server on %s:%s\n", s.Host, s.Port)
 
 	return s.httpServer.Shutdown(ctx)
 }

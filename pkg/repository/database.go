@@ -41,13 +41,13 @@ func NewDatabase(cfg *DBConfig) (*sql.DB, error) {
 		db, err = makeConnectionDB(cfg)
 
 		fmt.Print("Database Configuration:\n")
-		fmt.Printf("\tDriver:   %s\n", cfg.DriverName)
-		fmt.Printf("\tDB Name:  %s\n", cfg.DBName)
-		fmt.Printf("\tHost:     %s\n", cfg.Host)
-		fmt.Printf("\tPort:     %s\n", cfg.Port)
-		fmt.Printf("\tUser:     %s\n", cfg.Username)
-		fmt.Print("\tPassword:  [REDACTED]\n")
-		fmt.Printf("\tSSL Mode: %s\n", cfg.SSLMode)
+		fmt.Printf("\tDriver:		%s\n", cfg.DriverName)
+		fmt.Printf("\tDB Name:  	%s\n", cfg.DBName)
+		fmt.Printf("\tHost:     	%s\n", cfg.Host)
+		fmt.Printf("\tPort:     	%s\n", cfg.Port)
+		fmt.Printf("\tUser:     	%s\n", cfg.Username)
+		fmt.Print("\tPassword: 	[REDACTED]\n")
+		fmt.Printf("\tSSL Mode: 	%s\n", cfg.SSLMode)
 
 		return db, err
 

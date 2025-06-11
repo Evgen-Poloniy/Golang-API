@@ -7,7 +7,9 @@ import (
 	"API/pkg/service"
 	"context"
 	"database/sql"
+	"errors"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -43,7 +45,7 @@ func main() {
 	)
 
 	go func() {
-		if err := srv.Start(); err != nil {
+		if err := srv.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("Server error: %s\n", err.Error())
 		}
 	}()
@@ -56,7 +58,7 @@ func main() {
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("Server forced to shutdown: %v", err)
+		log.Fatalf("Server forced to shutdown: %v\n", err)
 	}
 
 	log.Println("Server exited properly")

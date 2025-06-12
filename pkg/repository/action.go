@@ -13,7 +13,7 @@ func NewActionRepository(db *sql.DB) *ActionRepository {
 	return &ActionRepository{db: db}
 }
 
-func (r *ActionRepository) GetUserByID(user_id int) (*Users, error) {
+func (r *ActionRepository) GetUserByID(user_id uint32) (*Users, error) {
 	var query string = "SELECT * FROM Users WHERE user_id = $1"
 
 	row := r.db.QueryRow(query, user_id)

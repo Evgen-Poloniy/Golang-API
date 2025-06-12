@@ -17,13 +17,13 @@ func (h *Handler) getUserByID(w http.ResponseWriter, r *http.Request) {
 		var user_id_str string = r.URL.Query().Get("user_id")
 		if user_id_str == "" {
 			var statusCode int = http.StatusBadRequest
-			var errorStr string = "Parameter user_id is required"
+			var errorStr string = "parameter 'user_id' is required"
 			responseJsonError(w, errorStr, statusCode)
 			logError(address, action, urlString, r.Method, statusCode, errorStr)
 			return
 		}
 
-		user_id, err := strconv.Atoi(user_id_str)
+		user_id_64, err := strconv.ParseUint(user_id_str, 10, 32)
 		if err != nil {
 			var statusCode int = http.StatusInternalServerError
 			var errorStr string = err.Error()
@@ -31,6 +31,8 @@ func (h *Handler) getUserByID(w http.ResponseWriter, r *http.Request) {
 			logError(address, action, urlString, r.Method, statusCode, errorStr)
 			return
 		}
+
+		user_id := uint32(user_id_64)
 
 		user, err := h.serv.GetUserByID(user_id)
 		if err != nil {
@@ -62,7 +64,7 @@ func (h *Handler) getUserByUsername(w http.ResponseWriter, r *http.Request) {
 		var username string = r.URL.Query().Get("username")
 		if username == "" {
 			var statusCode int = http.StatusBadRequest
-			var errorStr string = "parameter username is required"
+			var errorStr string = "parameter 'username' is required"
 			responseJsonError(w, errorStr, statusCode)
 			logError(address, action, urlString, r.Method, statusCode, errorStr)
 			return
@@ -159,7 +161,7 @@ func (h *Handler) shutdownServer(w http.ResponseWriter, r *http.Request) {
 		var password string = r.URL.Query().Get("password")
 		if password == "" {
 			var statusCode int = http.StatusBadRequest
-			var errorStr string = "parameter password is required"
+			var errorStr string = "parameter 'password' is required"
 			responseJsonError(w, errorStr, statusCode)
 			logError(address, action, urlString, r.Method, statusCode, errorStr)
 			return

@@ -7,11 +7,11 @@ import (
 )
 
 type Authorization interface {
-	CreateUser(user *Users) (int, error)
+	CreateUser(user *Users) (uint32, error)
 }
 
 type Action interface {
-	GetUserByID(user_id int) (*Users, error)
+	GetUserByID(user_id uint32) (*Users, error)
 	GetUserByUsername(username string) (*Users, error)
 	GetUserIDByUsername(username string) (uint32, error)
 	GetUserByAttributes(attributes map[string]string) (*Users, error)
@@ -20,6 +20,8 @@ type Action interface {
 
 type Transaction interface {
 	MakeTransaction(senderID uint32, recipientID uint32, amount float64) error
+	CreateRecordOfTransaction(transaction *Transactions) (uint32, error)
+	GetTransactionByID(transaction_id uint32) (*Transactions, error)
 }
 
 type Repository struct {

@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"API/pkg/repository"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -74,7 +76,23 @@ func (h *Handler) makeTransaction(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err := h.serv.MakeTransaction(data.UsernameSender, data.UsernameRecipient, data.Amount, h.serv.Action); err != nil {
+		senderID, recipientID, errTransaction := h.serv.MakeTransaction(data.UsernameSender, data.UsernameRecipient, data.Amount, h.serv.Action)
+		if errTransaction != nil {
+			var statusCode int = http.StatusInternalServerError
+			var errorStr string = errTransaction.Error()
+			responseJsonError(w, errorStr, statusCode)
+			logError(address, action, urlString, r.Method, statusCode, errorStr)
+			return
+		}
+
+		transaction := repository.Transactions{
+			Amount:      data.Amount,
+			SenderID:    senderID,
+			RecipientID: recipientID,
+		}
+
+		_, err := h.serv.CreateRecordOfTransaction(&transaction)
+		if err != nil {
 			var statusCode int = http.StatusInternalServerError
 			var errorStr string = err.Error()
 			responseJsonError(w, errorStr, statusCode)
@@ -87,6 +105,52 @@ func (h *Handler) makeTransaction(w http.ResponseWriter, r *http.Request) {
 		logEvent(address, action, urlString, r.Method, statusCode)
 
 	default:
+		var statusCode int = http.StatusMethodNotAllowed
+		responseJsonError(w, methodNotAllowed, statusCode)
+		logError(address, action, urlString, r.Method, statusCode, methodNotAllowed)
+	}
+}
+
+func (h *Handler) getTransactionByID(w http.ResponseWriter, r *http.Request) {
+	var address string = r.RemoteAddr
+	var action string = "getTransactionByID"
+	var urlString string = r.URL.String()
+
+	if r.Method == http.MethodGet {
+		transaction_id_str := r.URL.Query().Get("transaction_id")
+		if transaction_id_str == "" {
+			var statusCode int = http.StatusInternalServerError
+			var errorStr string = "parameter 'transaction_id' is required"
+			responseJsonError(w, errorStr, statusCode)
+			logError(address, action, urlString, r.Method, statusCode, errorStr)
+			return
+		}
+
+		transaction_id_64, err := strconv.ParseUint(transaction_id_str, 10, 32)
+		if err != nil {
+			var statusCode int = http.StatusInternalServerError
+			var errorStr string = err.Error()
+			responseJsonError(w, errorStr, statusCode)
+			logError(address, action, urlString, r.Method, statusCode, errorStr)
+			return
+		}
+
+		transaction_id := uint32(transaction_id_64)
+
+		transaction, err := h.serv.GetTransactionByID(transaction_id)
+		if err != nil {
+			var statusCode int = http.StatusInternalServerError
+			var errorStr string = err.Error()
+			responseJsonError(w, errorStr, statusCode)
+			logError(address, action, urlString, r.Method, statusCode, errorStr)
+			return
+		}
+
+		var statusCode int = http.StatusOK
+		responseJsonData(w, transaction, statusCode)
+		logEvent(address, action, urlString, r.Method, statusCode)
+
+	} else {
 		var statusCode int = http.StatusMethodNotAllowed
 		responseJsonError(w, methodNotAllowed, statusCode)
 		logError(address, action, urlString, r.Method, statusCode, methodNotAllowed)

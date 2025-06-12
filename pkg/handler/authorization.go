@@ -34,7 +34,7 @@ func (h *Handler) signUp(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var statusCode int = http.StatusOK
-		var answerString string = "account with username \"" + user.Username + "\" has created"
+		var answerString string = "account with username '" + user.Username + "' has created"
 		responseJsonMessage(w, answerString, statusCode)
 		logEvent(address, action, urlString, r.Method, statusCode)
 

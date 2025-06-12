@@ -14,7 +14,7 @@ func NewTransactionService(repos repository.Transaction) *TransactionService {
 	return &TransactionService{repos: repos}
 }
 
-func (s *TransactionService) MakeTransaction(senderUsername string, RecipientUsername string, amount float64, a Action) error {
+func (s *TransactionService) MakeTransaction(senderUsername string, recipientUsername string, amount float64, a Action) (uint32, uint32, error) {
 
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -31,17 +31,17 @@ func (s *TransactionService) MakeTransaction(senderUsername string, RecipientUse
 	var recipientErr error
 
 	go func() {
-		recipientID, recipientErr = a.GetUserIDByUsername(RecipientUsername)
+		recipientID, recipientErr = a.GetUserIDByUsername(recipientUsername)
 		wg.Done()
 	}()
 
 	wg.Wait()
 
 	if senderErr != nil {
-		return senderErr
+		return 0, 0, senderErr
 	}
 	if recipientErr != nil {
-		return recipientErr
+		return 0, 0, recipientErr
 	}
 
 	wg.Add(1)
@@ -57,16 +57,24 @@ func (s *TransactionService) MakeTransaction(senderUsername string, RecipientUse
 	wg.Wait()
 
 	if balanceErr != nil {
-		return balanceErr
+		return 0, 0, balanceErr
 	}
 
 	if amount > balance {
-		return errors.New("there are not enough coins to make a transaction")
+		return 0, 0, errors.New("there are not enough coins to make a transaction")
 	}
 
 	if err := s.repos.MakeTransaction(senderID, recipientID, amount); err != nil {
-		return err
+		return 0, 0, err
 	}
 
-	return nil
+	return senderID, recipientID, nil
+}
+
+func (s *TransactionService) CreateRecordOfTransaction(transaction *repository.Transactions) (uint32, error) {
+	return s.repos.CreateRecordOfTransaction(transaction)
+}
+
+func (s *TransactionService) GetTransactionByID(transaction_id uint32) (*repository.Transactions, error) {
+	return s.repos.GetTransactionByID(transaction_id)
 }

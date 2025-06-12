@@ -10,7 +10,7 @@ func NewActionService(repos repository.Action) *ActionService {
 	return &ActionService{repos: repos}
 }
 
-func (s *ActionService) GetUserByID(user_id int) (*repository.Users, error) {
+func (s *ActionService) GetUserByID(user_id uint32) (*repository.Users, error) {
 	return s.repos.GetUserByID(user_id)
 }
 
@@ -19,7 +19,7 @@ func (s *ActionService) GetUserByUsername(username string) (*repository.Users, e
 }
 
 func (s *ActionService) GetUserIDByUsername(username string) (uint32, error) {
-	return 0, nil
+	return s.repos.GetUserIDByUsername(username)
 }
 
 func (s *ActionService) GetUserByAttributes(attributes map[string]string) (*repository.Users, error) {

@@ -7,8 +7,8 @@ import (
 )
 
 func responseJsonMessage(w http.ResponseWriter, message string, code int) {
-	w.WriteHeader(code)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
 
 	type jsonMessage struct {
 		Code    int    `json:"code"`
@@ -31,8 +31,8 @@ func responseJsonMessage(w http.ResponseWriter, message string, code int) {
 }
 
 func responseJsonError(w http.ResponseWriter, errorAnswer string, code int) {
-	w.WriteHeader(code)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
 
 	type jsonError struct {
 		Code  int    `json:"code"`
@@ -55,8 +55,8 @@ func responseJsonError(w http.ResponseWriter, errorAnswer string, code int) {
 }
 
 func responseJsonData(w http.ResponseWriter, data interface{}, code int) {
-	w.WriteHeader(code)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
 
 	jsonData, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {

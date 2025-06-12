@@ -10,6 +10,6 @@ func NewAuthService(repos repository.Authorization) *AuthService {
 	return &AuthService{repos: repos}
 }
 
-func (s *AuthService) CreateUser(user *repository.Users) (int, error) {
+func (s *AuthService) CreateUser(user *repository.Users) (uint32, error) {
 	return s.repos.CreateUser(user)
 }

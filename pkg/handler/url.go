@@ -3,15 +3,18 @@ package handler
 // import "net/http"
 
 const (
-	pathPing                 string = "/ping"
-	pathOption               string = "/option"
-	pathSingUp               string = "/auth/sign-up"
-	pathActionUserSearch     string = "/action/user/search"
-	pathActionUserByID       string = "/action/user/get-by-ID"
-	pathActionUserByUsername string = "/action/user/get-by-username"
-	pathActionShutDownServer string = "/action/shutdown"
+	pathPing                    string = "/ping"
+	pathOption                  string = "/option"
+	pathSingUp                  string = "/auth/sign-up"
+	pathActionUserSearch        string = "/action/user/search"
+	pathActionUserGetByID       string = "/action/user/get-by-ID"
+	pathActionUserGetByUsername string = "/action/user/get-by-username"
+	pathActionShutDownServer    string = "/action/shutdown"
+)
 
-	pathMakeTransaction string = "/transaction/make-transaction"
+const (
+	pathMakeTransaction    string = "/transaction/make-transaction"
+	pathTransactionGetByID string = "/transaction/get-by-ID"
 )
 
 const (
@@ -41,16 +44,20 @@ var urlsParametrs = []handlerParametrs{
 		Methods: "GET, POST",
 	},
 	{
-		Path:    pathActionUserByID,
+		Path:    pathActionUserGetByID,
 		Methods: "GET",
 	},
 	{
-		Path:    pathActionUserByUsername,
+		Path:    pathActionUserGetByUsername,
 		Methods: "GET",
 	},
 	{
 		Path:    pathMakeTransaction,
 		Methods: "PATCH",
+	},
+	{
+		Path:    pathTransactionGetByID,
+		Methods: "GET",
 	},
 	{
 		Path:    pathActionShutDownServer,

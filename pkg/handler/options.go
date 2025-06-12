@@ -2,27 +2,46 @@ package handler
 
 import (
 	"API/pkg/constants"
-	"log"
 	"net/http"
 	"os"
 )
 
 func (h *Handler) ping(w http.ResponseWriter, r *http.Request) {
-	responseJsonMessage(w, "Connection successful", http.StatusOK)
-
 	var address string = r.RemoteAddr
-	log.Printf("Checking connection from address: %s", address)
+	var action string = "ping"
+	var urlString string = r.URL.String()
+
+	if r.Method == http.MethodGet {
+		var statusCode int = http.StatusOK
+		responseJsonMessage(w, "connection successful", statusCode)
+		logEvent(address, action, urlString, r.Method, statusCode)
+
+	} else {
+		var statusCode int = http.StatusMethodNotAllowed
+		responseJsonError(w, methodNotAllowed, statusCode)
+		logError(address, action, urlString, r.Method, statusCode, methodNotAllowed)
+	}
 }
 
 func (h *Handler) options(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-
-	if os.Getenv("MODE") == constants.DEBUG_WITHOUT_DB {
-		w.Write([]byte(h.printHandlers(urlsParametrsDebugWithoutDB)))
-	} else {
-		w.Write([]byte(h.printHandlers(urlsParametrs)))
-	}
-
 	var address string = r.RemoteAddr
-	log.Printf("Requested actions of the server from address: %s", address)
+	var action string = "option"
+	var urlString string = r.URL.String()
+
+	if r.Method == http.MethodGet {
+		w.WriteHeader(http.StatusOK)
+
+		if os.Getenv("MODE") == constants.DEBUG_WITHOUT_DB {
+			w.Write([]byte(h.printHandlers(urlsParametrsDebugWithoutDB)))
+		} else {
+			w.Write([]byte(h.printHandlers(urlsParametrs)))
+		}
+
+		logEvent(address, action, urlString, "GET", http.StatusOK)
+
+	} else {
+		var statusCode int = http.StatusMethodNotAllowed
+		responseJsonError(w, methodNotAllowed, statusCode)
+		logError(address, action, urlString, r.Method, statusCode, methodNotAllowed)
+	}
 }

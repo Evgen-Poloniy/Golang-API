@@ -42,11 +42,10 @@ func checkMode(h *Handler, router *http.ServeMux) {
 		router.HandleFunc(pathOption, h.options)
 		router.HandleFunc(pathSingUp, h.signUp)
 		router.HandleFunc(pathActionUserSearch, h.getUserByAttributes)
-		router.HandleFunc("/v1/action/user", h.getUserByUsername)
+		router.HandleFunc(pathActionUserByID, h.getUserByID)
+		router.HandleFunc(pathActionUserByUsername, h.getUserByUsername)
 		router.HandleFunc(pathActionShutDownServer, h.shutdownServer)
-		router.HandleFunc(patMakeTransaction, h.makeTransaction)
-
-		router.HandleFunc(pathTestHandler, h.testGetUserByAttributes)
+		router.HandleFunc(pathMakeTransaction, h.makeTransaction)
 
 		fmt.Print(h.printHandlers(urlsParametrs))
 
@@ -54,8 +53,6 @@ func checkMode(h *Handler, router *http.ServeMux) {
 		router.HandleFunc(pathPing, h.ping)
 		router.HandleFunc(pathOption, h.options)
 		router.HandleFunc(pathActionShutDownServer, h.shutdownServer)
-
-		router.HandleFunc(pathTestHandler, h.testGetUserByAttributes)
 
 		fmt.Print(h.printHandlers(urlsParametrsDebugWithoutDB))
 	}

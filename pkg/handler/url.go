@@ -7,11 +7,15 @@ const (
 	pathOption               string = "/option"
 	pathSingUp               string = "/auth/sign-up"
 	pathActionUserSearch     string = "/action/user/search"
+	pathActionUserByID       string = "/action/user/get-by-ID"
+	pathActionUserByUsername string = "/action/user/get-by-username"
 	pathActionShutDownServer string = "/action/shutdown"
 
-	patMakeTransaction string = "/transaction/make_transaction"
+	pathMakeTransaction string = "/transaction/make-transaction"
+)
 
-	pathTestHandler string = "/test/action/user"
+const (
+	methodNotAllowed string = "method not allowed"
 )
 
 type handlerParametrs struct {
@@ -37,19 +41,19 @@ var urlsParametrs = []handlerParametrs{
 		Methods: "GET, POST",
 	},
 	{
-		Path:    "/v1/action/user",
+		Path:    pathActionUserByID,
 		Methods: "GET",
 	},
 	{
-		Path:    patMakeTransaction,
+		Path:    pathActionUserByUsername,
+		Methods: "GET",
+	},
+	{
+		Path:    pathMakeTransaction,
 		Methods: "PATCH",
 	},
 	{
 		Path:    pathActionShutDownServer,
-		Methods: "GET",
-	},
-	{
-		Path:    pathTestHandler,
 		Methods: "GET",
 	},
 }
@@ -65,10 +69,6 @@ var urlsParametrsDebugWithoutDB = []handlerParametrs{
 	},
 	{
 		Path:    pathActionShutDownServer,
-		Methods: "GET",
-	},
-	{
-		Path:    pathTestHandler,
 		Methods: "GET",
 	},
 }

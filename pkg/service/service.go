@@ -7,9 +7,9 @@ type Authorization interface {
 }
 
 type Action interface {
-	GetUserById(user_id int) (*repository.Users, error)
+	GetUserByID(user_id int) (*repository.Users, error)
 	GetUserByUsername(username string) (*repository.Users, error)
-	GetUserIdByUsername(username string) (uint32, error)
+	GetUserIDByUsername(username string) (uint32, error)
 	GetUserByAttributes(attributes map[string]string) (*repository.Users, error)
 	GetUserBalance(user_id uint32) (float64, error)
 }

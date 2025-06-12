@@ -13,7 +13,7 @@ func NewActionRepository(db *sql.DB) *ActionRepository {
 	return &ActionRepository{db: db}
 }
 
-func (r *ActionRepository) GetUserById(user_id int) (*Users, error) {
+func (r *ActionRepository) GetUserByID(user_id int) (*Users, error) {
 	var query string = "SELECT * FROM Users WHERE user_id = $1"
 
 	row := r.db.QueryRow(query, user_id)
@@ -47,7 +47,7 @@ func (r *ActionRepository) GetUserByUsername(username string) (*Users, error) {
 	return &user, nil
 }
 
-func (r *ActionRepository) GetUserIdByUsername(username string) (uint32, error) {
+func (r *ActionRepository) GetUserIDByUsername(username string) (uint32, error) {
 	var query string = "SELECT user_id FROM Users WHERE username = $1"
 
 	var user_id uint32 = 0

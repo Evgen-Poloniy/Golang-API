@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -34,40 +33,62 @@ func (t *transactionData) Validate() error {
 }
 
 func (h *Handler) makeTransaction(w http.ResponseWriter, r *http.Request) {
+	var address string = r.RemoteAddr
+	var urlString string = r.URL.String()
+	var action string = "makeTransaction"
+
 	switch r.Method {
 	case http.MethodPatch:
 
 		var data transactionData
 
 		if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-			responseJsonError(w, err.Error(), http.StatusBadRequest)
+			var statusCode int = http.StatusBadRequest
+			var errorStr string = err.Error()
+			responseJsonError(w, errorStr, statusCode)
+			logError(address, action, urlString, r.Method, statusCode, errorStr)
 			return
 		}
 
 		if err := data.Validate(); err != nil {
-			responseJsonError(w, err.Error(), http.StatusBadRequest)
+			var statusCode int = http.StatusBadRequest
+			var errorStr string = err.Error()
+			responseJsonError(w, errorStr, statusCode)
+			logError(address, action, urlString, r.Method, statusCode, errorStr)
 			return
 		}
 
 		if data.Amount < 0 {
-			responseJsonError(w, "amount can't be less then 0", http.StatusBadRequest)
+			var statusCode int = http.StatusBadRequest
+			var errorStr string = "amount can't be less then 0"
+			responseJsonError(w, errorStr, statusCode)
+			logError(address, action, urlString, r.Method, statusCode, errorStr)
 			return
 		}
 
 		if data.UsernameSender == data.UsernameRecipient {
-			responseJsonError(w, "the sender and the recipient are one user. Operation denied", http.StatusBadRequest)
+			var statusCode int = http.StatusBadRequest
+			var errorStr string = "the sender and the recipient are one user. Operation denied"
+			responseJsonError(w, errorStr, statusCode)
+			logError(address, action, urlString, r.Method, statusCode, errorStr)
 			return
 		}
 
 		if err := h.serv.MakeTransaction(data.UsernameSender, data.UsernameRecipient, data.Amount, h.serv.Action); err != nil {
-			responseJsonError(w, err.Error(), http.StatusInternalServerError)
+			var statusCode int = http.StatusInternalServerError
+			var errorStr string = err.Error()
+			responseJsonError(w, errorStr, statusCode)
+			logError(address, action, urlString, r.Method, statusCode, errorStr)
 			return
 		}
 
-		var address string = r.RemoteAddr
-		log.Printf("Action: get information about user from: %s\n", address)
+		var statusCode int = http.StatusOK
+		responseJsonMessage(w, "transaction was successful", statusCode)
+		logEvent(address, action, urlString, r.Method, statusCode)
 
 	default:
-		responseJsonError(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		var statusCode int = http.StatusMethodNotAllowed
+		responseJsonError(w, methodNotAllowed, statusCode)
+		logError(address, action, urlString, r.Method, statusCode, methodNotAllowed)
 	}
 }

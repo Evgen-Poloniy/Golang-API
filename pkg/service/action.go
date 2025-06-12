@@ -10,15 +10,15 @@ func NewActionService(repos repository.Action) *ActionService {
 	return &ActionService{repos: repos}
 }
 
-func (s *ActionService) GetUserById(user_id int) (*repository.Users, error) {
-	return s.repos.GetUserById(user_id)
+func (s *ActionService) GetUserByID(user_id int) (*repository.Users, error) {
+	return s.repos.GetUserByID(user_id)
 }
 
 func (s *ActionService) GetUserByUsername(username string) (*repository.Users, error) {
 	return s.repos.GetUserByUsername(username)
 }
 
-func (s *ActionService) GetUserIdByUsername(username string) (uint32, error) {
+func (s *ActionService) GetUserIDByUsername(username string) (uint32, error) {
 	return 0, nil
 }
 

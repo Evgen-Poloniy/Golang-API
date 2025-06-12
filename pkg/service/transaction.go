@@ -23,7 +23,7 @@ func (s *TransactionService) MakeTransaction(senderUsername string, RecipientUse
 	var senderErr error
 
 	go func() {
-		senderID, senderErr = a.GetUserIdByUsername(senderUsername)
+		senderID, senderErr = a.GetUserIDByUsername(senderUsername)
 		wg.Done()
 	}()
 
@@ -31,7 +31,7 @@ func (s *TransactionService) MakeTransaction(senderUsername string, RecipientUse
 	var recipientErr error
 
 	go func() {
-		recipientID, recipientErr = a.GetUserIdByUsername(RecipientUsername)
+		recipientID, recipientErr = a.GetUserIDByUsername(RecipientUsername)
 		wg.Done()
 	}()
 

@@ -1,11 +1,12 @@
 package repository
 
 import (
-	"API/pkg/constants"
+	"API/pkg/constant"
 	"database/sql"
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -37,7 +38,7 @@ func NewDatabase(cfg *DBConfig) (*sql.DB, error) {
 	var err error
 
 	switch mode {
-	case constants.DEBUG:
+	case constant.DEBUG:
 		db, err = makeConnectionDB(cfg)
 
 		fmt.Print("Database Configuration:\n")
@@ -51,11 +52,11 @@ func NewDatabase(cfg *DBConfig) (*sql.DB, error) {
 
 		return db, err
 
-	case constants.DEBUG_WITHOUT_DB:
+	case constant.DEBUG_WITHOUT_DB:
 		fmt.Printf("Database has'nt started, because of chosed mode: \"%s\"\n", mode)
 		return nil, nil
 
-	case constants.PRODUCTION:
+	case constant.PRODUCTION:
 		db, err = makeConnectionDB(cfg)
 
 		return db, err
@@ -63,9 +64,9 @@ func NewDatabase(cfg *DBConfig) (*sql.DB, error) {
 	default:
 		var errorString string = fmt.Sprintf(
 			"uncorrect mode of API. Check .env file and set API mode:\n\t\"%s\"\n\t\"%s\"\n\t\"%s\"\n",
-			constants.DEBUG,
-			constants.DEBUG_WITHOUT_DB,
-			constants.PRODUCTION,
+			constant.DEBUG,
+			constant.DEBUG_WITHOUT_DB,
+			constant.PRODUCTION,
 		)
 		return nil, errors.New(errorString)
 	}
@@ -78,21 +79,16 @@ func makeConnectionDB(cfg *DBConfig) (*sql.DB, error) {
 		cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode,
 	)
 
-	var db *sql.DB
-	var err error
-
-	for i := 0; i < 3; i++ {
-		db, err = sql.Open(cfg.DriverName, dsn)
-		if err != nil {
-			time.Sleep(5 * time.Second)
-		} else {
-			err = nil
-			break
-		}
+	delay, err := strconv.Atoi(os.Getenv("API_DELAY_BD_CONNECTION"))
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert 'string' to 'int': %v", err)
 	}
 
+	time.Sleep(time.Duration(delay) * time.Second)
+
+	db, err := sql.Open(cfg.DriverName, dsn)
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database after 3 attempts: %v", err)
+		return nil, fmt.Errorf("failed to open database: %v", err)
 	}
 
 	if err := db.Ping(); err != nil {

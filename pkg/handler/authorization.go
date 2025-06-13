@@ -1,10 +1,29 @@
 package handler
 
 import (
-	"API/pkg/repository"
+	"API/pkg/attribute"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 )
+
+func validate(auth *attribute.AuthField) error {
+	var missingFields []string
+
+	if auth.Username == "" {
+		missingFields = append(missingFields, "username")
+	}
+	if auth.Password == "" {
+		missingFields = append(missingFields, "password")
+	}
+
+	if len(missingFields) > 0 {
+		return fmt.Errorf("missing required fields: %v", strings.Join(missingFields, ", "))
+	}
+
+	return nil
+}
 
 func (h *Handler) signUp(w http.ResponseWriter, r *http.Request) {
 	var address string = r.RemoteAddr
@@ -13,9 +32,9 @@ func (h *Handler) signUp(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodPost:
-		var user repository.Users
+		var auth attribute.AuthField
 
-		err := json.NewDecoder(r.Body).Decode(&user)
+		err := json.NewDecoder(r.Body).Decode(&auth)
 		if err != nil {
 			var statusCode int = http.StatusBadRequest
 			var errorStr string = "invalid input"
@@ -24,7 +43,15 @@ func (h *Handler) signUp(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		_, err = h.serv.CreateUser(&user)
+		if err := validate(&auth); err != nil {
+			var statusCode int = http.StatusBadRequest
+			var errorStr string = err.Error()
+			responseJsonError(w, err.Error(), http.StatusInternalServerError)
+			logError(address, action, urlString, r.Method, statusCode, errorStr)
+			return
+		}
+
+		_, err = h.serv.CreateUser(&auth)
 		if err != nil {
 			var statusCode int = http.StatusInternalServerError
 			var errorStr string = err.Error()
@@ -34,7 +61,7 @@ func (h *Handler) signUp(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var statusCode int = http.StatusOK
-		var answerString string = "account with username '" + user.Username + "' has created"
+		var answerString string = "account with username '" + auth.Username + "' has created"
 		responseJsonMessage(w, answerString, statusCode)
 		logEvent(address, action, urlString, r.Method, statusCode)
 

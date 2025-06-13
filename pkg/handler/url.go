@@ -41,7 +41,7 @@ var urlsParametrs = []handlerParametrs{
 	},
 	{
 		Path:    pathActionUserSearch,
-		Methods: "GET, POST",
+		Methods: "POST",
 	},
 	{
 		Path:    pathActionUserGetByID,

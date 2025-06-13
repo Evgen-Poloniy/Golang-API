@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"API/pkg/attribute"
 	"database/sql"
 
 	_ "github.com/lib/pq"
@@ -8,13 +9,14 @@ import (
 
 type Authorization interface {
 	CreateUser(user *Users) (uint32, error)
+	GetPasswordHashByUsername(username string) (string, error)
 }
 
 type Action interface {
-	GetUserByID(user_id uint32) (*Users, error)
-	GetUserByUsername(username string) (*Users, error)
+	GetUserByID(user_id uint32) (*attribute.ActionField, error)
+	GetUserByUsername(username string) (*attribute.ActionField, error)
 	GetUserIDByUsername(username string) (uint32, error)
-	GetUserByAttributes(attributes map[string]string) (*Users, error)
+	GetUserByAttributes(attributes map[string]string) (*attribute.ActionField, error)
 	GetUserBalance(user_id uint32) (float64, error)
 }
 

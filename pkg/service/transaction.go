@@ -7,14 +7,18 @@ import (
 )
 
 type TransactionService struct {
-	repos repository.Transaction
+	repos  repository.Transaction
+	action Action
 }
 
-func NewTransactionService(repos repository.Transaction) *TransactionService {
-	return &TransactionService{repos: repos}
+func NewTransactionService(repos repository.Transaction, a Action) *TransactionService {
+	return &TransactionService{
+		repos:  repos,
+		action: a,
+	}
 }
 
-func (s *TransactionService) MakeTransaction(senderUsername string, recipientUsername string, amount float64, a Action) (uint32, uint32, error) {
+func (s *TransactionService) MakeTransaction(senderUsername string, recipientUsername string, amount float64) (uint32, uint32, error) {
 
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -23,7 +27,7 @@ func (s *TransactionService) MakeTransaction(senderUsername string, recipientUse
 	var senderErr error
 
 	go func() {
-		senderID, senderErr = a.GetUserIDByUsername(senderUsername)
+		senderID, senderErr = s.action.GetUserIDByUsername(senderUsername)
 		wg.Done()
 	}()
 
@@ -31,7 +35,7 @@ func (s *TransactionService) MakeTransaction(senderUsername string, recipientUse
 	var recipientErr error
 
 	go func() {
-		recipientID, recipientErr = a.GetUserIDByUsername(recipientUsername)
+		recipientID, recipientErr = s.action.GetUserIDByUsername(recipientUsername)
 		wg.Done()
 	}()
 
@@ -50,7 +54,7 @@ func (s *TransactionService) MakeTransaction(senderUsername string, recipientUse
 	var balanceErr error
 
 	go func() {
-		balance, balanceErr = a.GetUserBalance(senderID)
+		balance, balanceErr = s.action.GetUserBalance(senderID)
 		wg.Done()
 	}()
 

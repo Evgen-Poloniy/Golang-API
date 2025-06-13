@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"API/pkg/constants"
+	"API/pkg/constant"
 	"API/pkg/service"
 	"fmt"
 	"net/http"
@@ -37,7 +37,7 @@ func checkMode(h *Handler, router *http.ServeMux) {
 	var mode string = os.Getenv("MODE")
 
 	switch mode {
-	case constants.DEBUG:
+	case constant.DEBUG:
 		router.HandleFunc(pathPing, h.ping)
 		router.HandleFunc(pathOption, h.options)
 		router.HandleFunc(pathSingUp, h.signUp)
@@ -50,7 +50,7 @@ func checkMode(h *Handler, router *http.ServeMux) {
 
 		fmt.Print(h.printHandlers(urlsParametrs))
 
-	case constants.DEBUG_WITHOUT_DB:
+	case constant.DEBUG_WITHOUT_DB:
 		router.HandleFunc(pathPing, h.ping)
 		router.HandleFunc(pathOption, h.options)
 		router.HandleFunc(pathActionShutDownServer, h.shutdownServer)

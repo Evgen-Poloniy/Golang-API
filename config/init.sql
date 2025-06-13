@@ -3,7 +3,7 @@ CREATE TABLE Users (
     username VARCHAR(100) NOT NULL UNIQUE,      
     name VARCHAR(100),              
     surname VARCHAR(100),              
-    password VARCHAR(255) NOT NULL,             
+    password_hash VARCHAR(255) NOT NULL,             
     coins FLOAT8 NOT NULL DEFAULT 0.0           
 );
 
@@ -30,5 +30,3 @@ CREATE TABLE Transactions (
     FOREIGN KEY (sender_id) REFERENCES Users(user_id),      
     FOREIGN KEY (recipient_id) REFERENCES Users(user_id) 
 );
-
-

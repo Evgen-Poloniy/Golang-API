@@ -1,12 +1,12 @@
 package repository
 
 type Users struct {
-	ID       uint32  `json:"user_id"`
-	Username string  `json:"username"`
-	Name     string  `json:"name"`
-	Surname  string  `json:"surname"`
-	Password string  `json:"password"`
-	Coins    float64 `json:"coins"`
+	ID           uint32  `json:"user_id"`
+	Username     string  `json:"username"`
+	Name         string  `json:"name"`
+	Surname      string  `json:"surname"`
+	PasswordHash string  `json:"password_hash"`
+	Coins        float64 `json:"coins"`
 }
 
 // type Messages struct {

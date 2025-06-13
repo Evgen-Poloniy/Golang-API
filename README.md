@@ -1,14 +1,22 @@
 # Golang-API
->v.0.1.5
+>v.0.1.6
 
 1. Handlers:
 #
-    /ping         - GET
+    /ping                        - GET
 
-    /option       - GET
+    /option                      - GET
 
-    /auth/sign-up - POST
+    /auth/sign-up                - POST
 
-    /action/user  - GET
+    /action/user                 - GET
+
+	/action/user/search          - POST
+
+	/action/user/get-by-ID       - GET
+
+	/action/user/get-by-username - GET
+
+	/action/shutdown             - GET
 
 

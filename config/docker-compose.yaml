@@ -36,4 +36,5 @@ services:
       - API_HOST=${API_HOST}
       - API_PORT=${API_PORT}
       - API_PASSWORD=${API_PASSWORD}
+      - API_DELAY_BD_CONNECTION=${API_DELAY_BD_CONNECTION}
       - MODE=${MODE}

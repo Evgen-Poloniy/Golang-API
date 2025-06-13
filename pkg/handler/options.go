@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"API/pkg/constants"
+	"API/pkg/constant"
 	"net/http"
 	"os"
 )
@@ -29,15 +29,16 @@ func (h *Handler) options(w http.ResponseWriter, r *http.Request) {
 	var urlString string = r.URL.String()
 
 	if r.Method == http.MethodGet {
-		w.WriteHeader(http.StatusOK)
+		var statusCode int = http.StatusOK
+		w.WriteHeader(statusCode)
 
-		if os.Getenv("MODE") == constants.DEBUG_WITHOUT_DB {
+		if os.Getenv("MODE") == constant.DEBUG_WITHOUT_DB {
 			w.Write([]byte(h.printHandlers(urlsParametrsDebugWithoutDB)))
 		} else {
 			w.Write([]byte(h.printHandlers(urlsParametrs)))
 		}
 
-		logEvent(address, action, urlString, "GET", http.StatusOK)
+		logEvent(address, action, urlString, "GET", statusCode)
 
 	} else {
 		var statusCode int = http.StatusMethodNotAllowed

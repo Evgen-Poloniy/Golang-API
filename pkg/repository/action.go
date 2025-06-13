@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"API/pkg/attribute"
 	"database/sql"
 	"fmt"
 )
@@ -13,13 +14,12 @@ func NewActionRepository(db *sql.DB) *ActionRepository {
 	return &ActionRepository{db: db}
 }
 
-func (r *ActionRepository) GetUserByID(user_id uint32) (*Users, error) {
-	var query string = "SELECT * FROM Users WHERE user_id = $1"
+func (r *ActionRepository) GetUserByID(user_id uint32) (*attribute.ActionField, error) {
+	var query string = "SELECT user_id, username, name, surname, coins FROM Users WHERE user_id = $1"
+	var user attribute.ActionField
 
 	row := r.db.QueryRow(query, user_id)
-
-	var user Users
-	err := row.Scan(&user.ID, &user.Username, &user.Name, &user.Surname, &user.Password, &user.Coins)
+	err := row.Scan(&user.ID, &user.Username, &user.Name, &user.Surname, &user.Coins)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("user not found")
@@ -30,13 +30,12 @@ func (r *ActionRepository) GetUserByID(user_id uint32) (*Users, error) {
 	return &user, nil
 }
 
-func (r *ActionRepository) GetUserByUsername(username string) (*Users, error) {
-	var query string = "SELECT * FROM Users WHERE username = $1"
+func (r *ActionRepository) GetUserByUsername(username string) (*attribute.ActionField, error) {
+	var query string = "SELECT user_id, username, name, surname, coins FROM Users WHERE username = $1"
+	var user attribute.ActionField
 
 	row := r.db.QueryRow(query, username)
-
-	var user Users
-	err := row.Scan(&user.ID, &user.Username, &user.Name, &user.Surname, &user.Password, &user.Coins)
+	err := row.Scan(&user.ID, &user.Username, &user.Name, &user.Surname, &user.Coins)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("user not found")
@@ -60,8 +59,8 @@ func (r *ActionRepository) GetUserIDByUsername(username string) (uint32, error) 
 
 }
 
-func (r *ActionRepository) GetUserByAttributes(attributes map[string]string) (*Users, error) {
-	var query string = "SELECT * FROM Users WHERE"
+func (r *ActionRepository) GetUserByAttributes(attributes map[string]string) (*attribute.ActionField, error) {
+	var query string = "SELECT user_id, username, name, surname, coins FROM Users WHERE"
 
 	var i int = len(attributes)
 	for key, value := range attributes {
@@ -72,12 +71,10 @@ func (r *ActionRepository) GetUserByAttributes(attributes map[string]string) (*U
 		}
 	}
 
-	fmt.Printf("%s\n", query)
-
 	row := r.db.QueryRow(query)
 
-	var user Users
-	err := row.Scan(&user.ID, &user.Username, &user.Name, &user.Surname, &user.Password, &user.Coins)
+	var user attribute.ActionField
+	err := row.Scan(&user.ID, &user.Username, &user.Name, &user.Surname, &user.Coins)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("user not found")

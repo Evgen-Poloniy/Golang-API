@@ -76,7 +76,7 @@ func (h *Handler) makeTransaction(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		senderID, recipientID, errTransaction := h.serv.MakeTransaction(data.UsernameSender, data.UsernameRecipient, data.Amount, h.serv.Action)
+		senderID, recipientID, errTransaction := h.serv.MakeTransaction(data.UsernameSender, data.UsernameRecipient, data.Amount)
 		if errTransaction != nil {
 			var statusCode int = http.StatusInternalServerError
 			var errorStr string = errTransaction.Error()
